@@ -1,0 +1,222 @@
+<UserControl x:Class="LlmUsageMonitor.App.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel>
+            <DockPanel Margin="0,0,0,14">
+                <Button DockPanel.Dock="Right" Content="保存设置" Command="{Binding SaveCommand}" />
+                <StackPanel>
+                    <TextBlock Text="设置" Style="{StaticResource PageTitle}" />
+                    <TextBlock Text="{Binding StatusText}" Style="{StaticResource Caption}" />
+                </StackPanel>
+            </DockPanel>
+
+            <!-- Appearance -->
+            <Border Style="{StaticResource Card}" Margin="0,0,0,12">
+                <StackPanel>
+                    <TextBlock Text="外观" Style="{StaticResource SectionTitle}" />
+                    <TextBlock Text="主题" Style="{StaticResource Caption}" />
+                    <ComboBox Width="200" HorizontalAlignment="Left" ItemsSource="{Binding ThemeModes}"
+                              SelectedItem="{Binding SelectedTheme}" DisplayMemberPath="Label" />
+
+                    <TextBlock Text="模块独立配色（点击色块输入十六进制）" Style="{StaticResource Caption}"
+                               Margin="0,14,0,6" />
+                    <ItemsControl ItemsSource="{Binding ModuleColors}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="{DynamicResource App.CardAlt}" CornerRadius="8"
+                                        Padding="10" Margin="0,0,8,8" Width="180">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Name}" Style="{StaticResource Caption}" />
+                                        <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                                            <Border Width="22" Height="22" CornerRadius="6"
+                                                    Background="{Binding Color, Converter={StaticResource HexToBrush}}" />
+                                            <TextBox Width="110" Margin="8,0,0,0"
+                                                     Text="{Binding Color, UpdateSourceTrigger=PropertyChanged}" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <!-- Currency + rate -->
+            <Border Style="{StaticResource Card}" Margin="0,0,0,12">
+                <StackPanel>
+                    <TextBlock Text="币种与汇率" Style="{StaticResource SectionTitle}" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition Width="160" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                            <TextBlock Text="显示币种" Style="{StaticResource Caption}" />
+                            <ComboBox ItemsSource="{Binding CurrencyChoices}" SelectedItem="{Binding SelectedCurrency}"
+                                      DisplayMemberPath="Label" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Margin="0,0,10,0">
+                            <TextBlock Text="1 USD = ? CNY" Style="{StaticResource Caption}" />
+                            <TextBox Text="{Binding ManualRate, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2" VerticalAlignment="Bottom">
+                            <CheckBox Content="锁定汇率" IsChecked="{Binding RateLocked}" />
+                        </StackPanel>
+                    </Grid>
+                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                        <Button Content="联网刷新" Command="{Binding RefreshExchangeRateCommand}" Margin="0,0,8,0" />
+                        <Button Content="锁定当前" Command="{Binding LockRateCommand}" Margin="0,0,8,0" />
+                        <Button Content="解锁" Command="{Binding UnlockRateCommand}" />
+                    </StackPanel>
+                    <TextBlock Text="{Binding RateStatus}" Style="{StaticResource Caption}" Margin="0,6,0,0" />
+                </StackPanel>
+            </Border>
+
+            <!-- Pricing sources -->
+            <Border Style="{StaticResource Card}" Margin="0,0,0,12">
+                <StackPanel>
+                    <TextBlock Text="定价源" Style="{StaticResource SectionTitle}" />
+                    <CheckBox Content="LiteLLM 模型定价库（覆盖最广）" IsChecked="{Binding UseLiteLlm}" />
+                    <CheckBox Content="OpenRouter 实时定价" IsChecked="{Binding UseOpenRouter}" Margin="0,4,0,0" />
+                    <TextBlock Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="0,6,0,0"
+                               Text="定价按分级 TTL 缓存，并在离线时使用磁盘缓存降级；手工定价始终优先。" />
+                </StackPanel>
+            </Border>
+
+            <!-- Proxy -->
+            <Border Style="{StaticResource Card}" Margin="0,0,0,12">
+                <StackPanel>
+                    <TextBlock Text="网络代理" Style="{StaticResource SectionTitle}" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="160" />
+                            <ColumnDefinition Width="140" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="90" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                            <TextBlock Text="模式" Style="{StaticResource Caption}" />
+                            <ComboBox ItemsSource="{Binding ProxyModes}" SelectedItem="{Binding SelectedProxyMode}"
+                                      DisplayMemberPath="Label" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Margin="0,0,10,0">
+                            <TextBlock Text="协议" Style="{StaticResource Caption}" />
+                            <ComboBox ItemsSource="{Binding ProxyProtocols}"
+                                      SelectedItem="{Binding SelectedProxyProtocol}" DisplayMemberPath="Label" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2" Margin="0,0,10,0">
+                            <TextBlock Text="主机" Style="{StaticResource Caption}" />
+                            <TextBox Text="{Binding ProxyHost, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="3">
+                            <TextBlock Text="端口" Style="{StaticResource Caption}" />
+                            <TextBox Text="{Binding ProxyPort, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                    </Grid>
+                    <Grid Margin="0,8,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                            <TextBlock Text="用户名（可空）" Style="{StaticResource Caption}" />
+                            <TextBox Text="{Binding ProxyUser, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Margin="0,0,10,0">
+                            <TextBlock Text="密码（可空）" Style="{StaticResource Caption}" />
+                            <TextBox Text="{Binding ProxyPassword, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <CheckBox Grid.Column="2" Content="本地绕过" IsChecked="{Binding ProxyBypassLocal}"
+                                  VerticalAlignment="Bottom" />
+                    </Grid>
+                    <Button Content="应用代理设置" Command="{Binding ApplyProxyCommand}" Margin="0,10,0,0"
+                            HorizontalAlignment="Left" />
+                </StackPanel>
+            </Border>
+
+            <!-- Local proxy -->
+            <Border Style="{StaticResource Card}" Margin="0,0,0,12">
+                <StackPanel>
+                    <TextBlock Text="本地代理（精确统计）" Style="{StaticResource SectionTitle}" />
+                    <CheckBox Content="启用本地代理" IsChecked="{Binding LocalProxyEnabled}" />
+                    <Grid Margin="0,8,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="220" />
+                            <ColumnDefinition Width="120" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                            <TextBlock Text="监听地址" Style="{StaticResource Caption}" />
+                            <TextBox Text="{Binding LocalProxyAddress, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Margin="0,0,10,0">
+                            <TextBlock Text="端口" Style="{StaticResource Caption}" />
+                            <TextBox Text="{Binding LocalProxyPort, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="访问令牌（可空）" Style="{StaticResource Caption}" />
+                            <TextBox Text="{Binding LocalProxyToken, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                    </Grid>
+                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                        <Button Content="启动 / 停止" Command="{Binding ToggleLocalProxyCommand}" Margin="0,0,10,0" />
+                        <TextBlock Text="{Binding LocalProxyStatus}" VerticalAlignment="Center"
+                                   Foreground="{DynamicResource App.Accent}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Cache + misc -->
+            <Border Style="{StaticResource Card}" Margin="0,0,0,12">
+                <StackPanel>
+                    <TextBlock Text="缓存与刷新" Style="{StaticResource SectionTitle}" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                            <TextBlock Text="定价 TTL（分钟）" Style="{StaticResource Caption}" />
+                            <TextBox Text="{Binding PricingTtl, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Margin="0,0,8,0">
+                            <TextBlock Text="汇率 TTL（分钟）" Style="{StaticResource Caption}" />
+                            <TextBox Text="{Binding ExchangeTtl, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2" Margin="0,0,8,0">
+                            <TextBlock Text="用量 TTL（分钟）" Style="{StaticResource Caption}" />
+                            <TextBox Text="{Binding UsageTtl, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="3">
+                            <TextBlock Text="模型列表 TTL（分钟）" Style="{StaticResource Caption}" />
+                            <TextBox Text="{Binding ModelsTtl, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                    </Grid>
+                    <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                        <TextBlock Text="自动刷新间隔（秒）" VerticalAlignment="Center" Margin="0,0,8,0" />
+                        <TextBox Width="80" Text="{Binding AutoRefreshSeconds, UpdateSourceTrigger=PropertyChanged}" />
+                        <CheckBox Content="最小化到托盘" IsChecked="{Binding MinimizeToTray}" Margin="16,0,0,0"
+                                  VerticalAlignment="Center" />
+                        <CheckBox Content="桌面通知" IsChecked="{Binding DesktopNotifications}" Margin="16,0,0,0"
+                                  VerticalAlignment="Center" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                        <Button Content="清空缓存" Command="{Binding ClearCacheCommand}" Margin="0,0,8,0" />
+                        <Button Content="清除所有数据" Command="{Binding ClearAllDataCommand}"
+                                Background="#33E85D75" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

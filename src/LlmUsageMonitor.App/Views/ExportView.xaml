@@ -1,0 +1,71 @@
+<UserControl x:Class="LlmUsageMonitor.App.Views.ExportView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel>
+            <TextBlock Text="报表与工具" Style="{StaticResource PageTitle}" />
+            <TextBlock Text="{Binding StatusText}" Style="{StaticResource Caption}" />
+
+            <Grid Margin="0,16,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0" Style="{StaticResource Card}" Margin="0,0,8,0">
+                    <StackPanel>
+                        <TextBlock Text="导出报表" Style="{StaticResource SectionTitle}" />
+                        <TextBlock Text="时间范围" Style="{StaticResource Caption}" />
+                        <ComboBox ItemsSource="{Binding Ranges}" SelectedItem="{Binding Range}"
+                                  DisplayMemberPath="Label" />
+                        <TextBlock Text="平台" Style="{StaticResource Caption}" Margin="0,8,0,0" />
+                        <ComboBox ItemsSource="{Binding ProviderFilters}" SelectedItem="{Binding SelectedProvider}"
+                                  DisplayMemberPath="Label" />
+                        <TextBlock Text="格式" Style="{StaticResource Caption}" Margin="0,8,0,0" />
+                        <ComboBox ItemsSource="{Binding Formats}" SelectedItem="{Binding Format}" />
+                        <Button Content="选择位置并导出" Command="{Binding ExportCommand}" Margin="0,14,0,0"
+                                HorizontalAlignment="Left" />
+                        <TextBlock Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="0,8,0,0"
+                                   Text="支持 Excel (.xlsx)、CSV、JSON，包含时间、平台、模型、Token 与花费。" />
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="1" Style="{StaticResource Card}" Margin="8,0,0,0">
+                    <StackPanel>
+                        <TextBlock Text="Token 预计算" Style="{StaticResource SectionTitle}" />
+                        <TextBlock Text="模型名称" Style="{StaticResource Caption}" />
+                        <TextBox Text="{Binding TokenModel, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBlock Text="提示词内容" Style="{StaticResource Caption}" Margin="0,8,0,0" />
+                        <TextBox Text="{Binding TokenPrompt, UpdateSourceTrigger=PropertyChanged}"
+                                 AcceptsReturn="True" TextWrapping="Wrap" Height="90"
+                                 VerticalScrollBarVisibility="Auto" />
+                        <TextBlock Text="预计输出 Token 上限" Style="{StaticResource Caption}" Margin="0,8,0,0" />
+                        <TextBox Text="{Binding TokenOutput, UpdateSourceTrigger=PropertyChanged}" />
+                        <Button Content="计算" Command="{Binding CalculateTokensCommand}" Margin="0,12,0,0"
+                                HorizontalAlignment="Left" />
+
+                        <UniformGrid Columns="3" Margin="0,12,0,0">
+                            <StackPanel>
+                                <TextBlock Text="输入 Token" Style="{StaticResource Caption}" />
+                                <TextBlock Text="{Binding TokenInputResult}" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource App.Text}" />
+                            </StackPanel>
+                            <StackPanel>
+                                <TextBlock Text="输出 Token" Style="{StaticResource Caption}" />
+                                <TextBlock Text="{Binding TokenOutputResult}" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource App.Text}" />
+                            </StackPanel>
+                            <StackPanel>
+                                <TextBlock Text="预计花费" Style="{StaticResource Caption}" />
+                                <TextBlock Text="{Binding TokenCostResult}" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource App.Accent}" />
+                            </StackPanel>
+                        </UniformGrid>
+                        <TextBlock Text="{Binding TokenNote}" Style="{StaticResource Caption}"
+                                   TextWrapping="Wrap" Margin="0,8,0,0" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
