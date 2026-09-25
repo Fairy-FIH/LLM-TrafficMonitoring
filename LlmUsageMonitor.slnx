@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/LlmUsageMonitor.App/LlmUsageMonitor.App.csproj" />
+    <Project Path="src/LlmUsageMonitor.Core/LlmUsageMonitor.Core.csproj" />
+    <Project Path="src/LlmUsageMonitor.Infrastructure/LlmUsageMonitor.Infrastructure.csproj" />
+    <Project Path="src/LlmUsageMonitor.Providers/LlmUsageMonitor.Providers.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/LlmUsageMonitor.Tests/LlmUsageMonitor.Tests.csproj" />
+  </Folder>
+</Solution>
