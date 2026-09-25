@@ -1,19 +1,18 @@
 # LLM用量统计
 
-多平台大模型 API 用量与花费监控器。WPF / .NET 8，发布为**单文件 exe**，深/浅色主题，支持网页登录抓取用量、本地代理精确统计、预算告警、Token 预计算、报表导出与 AES 加密配置。
+多平台大模型 API 用量与花费监控器。WPF / .NET 8，深/浅色主题，支持网页登录抓取用量、本地代理精确统计、预算告警、Token 预计算、报表导出与 AES 加密配置。
 
 ## 功能一览
 
-- **实时统计**：请求次数、输入/输出/缓存 Token、总花费；美元 / 人民币一键切换。
-- **汇率**：联网自动刷新（er-api，frankfurter 兜底），可手动锁定 / 覆盖。
+- **实时统计**：请求次数、输入/输出/缓存 Token、总花费；美元 / 人民币切换。
+- **汇率**：联网自动刷新，可手动锁定 / 覆盖。
 - **多平台用量采集**
   - 官方用量 API：OpenAI、Anthropic、OpenRouter（含增量游标与去重）。
   - 本地代理模式：内置 OpenAI / Anthropic 兼容转发服务，对**任意平台**精确记录请求与 Token。
   - 余额查询：DeepSeek、Moonshot、SiliconFlow、OpenAI 计费接口等。
   - **网页登录抓取**：内置 WebView2 浏览器登录平台控制台，自动拦截并识别用量 JSON 后导入（适合没有官方用量 API 的平台）。
-- **定价引擎**：联网拉取 LiteLLM 定价库 + OpenRouter 实时价，内置离线兜底价，支持手工定价（永不被覆盖）。
-- **多级缓存**：内存 + SQLite 两级，分级 TTL、ETag 增量、请求合并（单飞）、失败时使用陈旧数据降级。
-- **现代 UI**：WPF-UI Fluent，Mica 材质，深/浅色主题，**每个模块独立配色**。
+- **定价引擎**：联网拉取 LiteLLM 定价库 + OpenRouter 实时价，内置离线价，支持自定义定价（不被覆盖）。
+- **多级缓存**：分级 TTL、ETag 增量、请求合并、失败时使用陈旧数据降级。
 - **其它**：多 Key 分组管理、预算告警（桌面通知）、Token 预计算、HTTP/SOCKS5 代理、报表导出（xlsx/csv/json）、配置 AES-256 加密落盘。
 
 ## 目录结构
@@ -44,10 +43,8 @@ pwsh -File .\build.ps1
 
 | 版本 | 体积 | 运行前提 |
 |---|---|---|
-| `dist/self-contained/LlmUsageMonitor.App.exe` | ~78 MB | 无需运行时，双击即用 |
+| `dist/self-contained/LlmUsageMonitor.App.exe` | ~78 MB | 无需运行时|
 | `dist/framework-dependent/LlmUsageMonitor.App.exe` | ~31 MB | 需安装 .NET 8 Desktop Runtime |
-
-> 注意：框架依赖版不可用单文件压缩（.NET 限制）；两次发布请顺序执行，避免共享 obj 造成产物异常。
 
 ## 使用
 
@@ -73,10 +70,10 @@ pwsh -File .\build.ps1
 |---|---|---|
 | DeepSeek | 本地代理 / 网页登录 | 默认上游，透传客户端 Key |
 | OpenAI / Anthropic / OpenRouter | 本地代理 / 网页登录 | 数据成熟、模型齐全 |
-| 智谱 / 阿里百炼 / 火山方舟 / Moonshot / SiliconFlow | 本地代理 / 网页登录 | OpenAI 兼容转发 |
+| 智谱 / 阿里 / 火山方舟 / Moonshot / SiliconFlow | 本地代理 / 网页登录 | OpenAI 兼容转发 |
 | Gemini / Azure / 自定义 | 本地代理 | 需填写对应 Base URL |
 
-> 说明：本项目已移除「密钥管理」界面，用量统一通过**本地代理**（客户端自带 Key，透传）或**网页登录抓取**获得，无需在应用内保存 API Key。
+> 说明：用量统一通过**本地代理**（客户端自带 Key，透传）或**网页登录抓取**获得，无需在应用内保存 API Key。
 
 ## 已知限制
 
